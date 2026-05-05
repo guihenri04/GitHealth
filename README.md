@@ -1,4 +1,4 @@
-# RepoHealth CLI
+# GitHealth CLI
 
 ## 1. Membros do grupo
 
@@ -9,7 +9,7 @@
 
 ## 2. Explicação do sistema
 
-O **RepoHealth CLI** é uma ferramenta de linha de comando voltada para identificar possíveis problemas de manutenção em repositórios GitHub por meio da mineração de repositórios de software.
+O **GitHealth CLI** é uma ferramenta de linha de comando voltada para identificar possíveis problemas de manutenção em repositórios GitHub por meio da mineração de repositórios de software.
 
 A proposta do sistema é analisar o histórico de evolução de um projeto e extrair informações que ajudem a compreender quais partes do código podem exigir mais atenção da equipe de desenvolvimento. A ferramenta poderá receber como entrada a URL de um repositório GitHub ou o caminho de um repositório local e, a partir disso, coletar dados sobre commits, arquivos modificados, frequência de alterações e relações entre mudanças.
 
