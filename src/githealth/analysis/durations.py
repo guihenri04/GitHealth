@@ -42,7 +42,11 @@ def build_pull_request_metrics(pr: PullRequest) -> PullRequestMetrics:
         number_of_reviews=len(pr.reviews),
         changes_requested=sum(1 for review in pr.reviews if review.state == "CHANGES_REQUESTED"),
         review_comments=pr.review_comments,
-        commits_after_first_review=0,
+        commits_after_first_review=sum(
+            1
+            for commit_date in pr.commit_dates
+            if first_review_at and commit_date > first_review_at
+        ),
         labels=pr.labels,
     )
 
