@@ -50,6 +50,109 @@ interpretados como prova de causalidade.
 - Ruff para lint
 - GitHub Actions para integracao continua
 
+## Instalacao
+
+Clone o repositorio:
+
+```bash
+git clone https://github.com/guihenri04/GitHealth.git
+cd GitHealth
+```
+
+Crie e ative um ambiente virtual:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+No Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+Instale a ferramenta:
+
+```bash
+pip install -e .
+```
+
+Para desenvolvimento, instale tambem as dependencias de teste:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Configure um token do GitHub:
+
+```bash
+export GITHUB_TOKEN="github_pat_seu_token"
+```
+
+No Windows PowerShell:
+
+```powershell
+$env:GITHUB_TOKEN="github_pat_seu_token"
+```
+
+O token nao deve ser passado como argumento da CLI, para evitar que ele fique
+salvo no historico do terminal.
+
+## Como utilizar
+
+Verifique a configuracao local:
+
+```bash
+githealth doctor
+```
+
+Analise um repositorio usando `owner/repository`:
+
+```bash
+githealth analyze django/django
+```
+
+Tambem e possivel usar a URL completa:
+
+```bash
+githealth analyze https://github.com/django/django
+```
+
+Defina um intervalo de datas:
+
+```bash
+githealth analyze django/django \
+  --since 2025-01-01 \
+  --until 2026-01-01
+```
+
+Escolha a pasta de saida:
+
+```bash
+githealth analyze django/django \
+  --output ./reports/django
+```
+
+Inclua PRs criados por bots:
+
+```bash
+githealth analyze django/django --include-bots
+```
+
+Limite a quantidade de PRs coletados, util para testes manuais:
+
+```bash
+githealth analyze django/django --limit 20
+```
+
+Inspecione um unico pull request:
+
+```bash
+githealth inspect django/django 12345
+```
+
 ## Limitacoes
 
 - A primeira versao suporta apenas repositorios hospedados no GitHub.
