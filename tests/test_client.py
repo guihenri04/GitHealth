@@ -22,6 +22,23 @@ def test_get_next_url_from_link_header() -> None:
     assert get_next_url(link) == "https://api.github.com/items?page=2"
 
 
+def test_pagination_reads_multiple_pages() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.params.get("page") == "2":
+            return httpx.Response(200, json=[{"id": 2}])
+        return httpx.Response(
+            200,
+            json=[{"id": 1}],
+            headers={"link": '<https://api.github.com/items?page=2>; rel="next"'},
+        )
+
+    client = GitHubClient(GitHubConfig(token=None), transport=httpx.MockTransport(handler))
+    try:
+        assert list(client.paginate("/items")) == [{"id": 1}, {"id": 2}]
+    finally:
+        client.close()
+
+
 def test_401_raises_api_error() -> None:
     client = GitHubClient(
         GitHubConfig(token=None),
