@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from githealth.config import AnalysisConfig
@@ -30,7 +31,10 @@ class PullRequestCollector:
 
         pull_requests: list[PullRequest] = []
         for number in numbers:
-            pull_requests.append(self.collect_one(config.owner, config.repo, number))
+            pr = self.collect_one(config.owner, config.repo, number)
+            if not config.include_bots and pr.is_bot:
+                continue
+            pull_requests.append(pr)
         return pull_requests
 
     def collect_one(self, owner: str, repo: str, number: int) -> PullRequest:
@@ -55,3 +59,10 @@ class PullRequestCollector:
         if config.since and closed_at < config.since:
             return False
         return not (config.until and closed_at >= config.until)
+
+
+def filter_pull_requests(
+    pull_requests: Iterable[PullRequest],
+    include_bots: bool = False,
+) -> list[PullRequest]:
+    return [pr for pr in pull_requests if include_bots or not pr.is_bot]
