@@ -212,4 +212,6 @@ O workflow esta em:
 - As correlacoes indicam associacoes historicas, nao causalidade.
 - Repositorios com poucos pull requests podem gerar resultados pouco representativos.
 - O tempo em draft depende da presenca do evento `ready_for_review` na API.
+- O relatorio HTML requer conexao com a internet para carregar o Plotly via CDN.
+- Pull requests sem nenhuma revisao nao contribuem para as correlacoes de tempo de revisao.
 
