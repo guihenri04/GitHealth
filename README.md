@@ -153,6 +153,58 @@ Inspecione um unico pull request:
 githealth inspect django/django 12345
 ```
 
+## Relatorios gerados
+
+Por padrao, a ferramenta exibe um resumo no terminal e gera os arquivos:
+
+```text
+reports/
+├── summary.html
+├── pull_requests.csv
+├── file_hotspots.csv
+└── analysis.json
+```
+
+O relatorio HTML contem graficos, correlacoes, arquivos classificados como
+hotspots e pull requests com maior tempo de ciclo.
+
+## Como executar os testes localmente
+
+Instale as dependencias de desenvolvimento:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Execute os testes:
+
+```bash
+pytest
+```
+
+Execute os testes com cobertura:
+
+```bash
+pytest --cov=githealth --cov-report=term-missing
+```
+
+Execute o lint:
+
+```bash
+ruff check .
+```
+
+## Integracao continua
+
+O projeto usa GitHub Actions para executar lint e testes automaticamente a cada
+push na branch `main` e a cada pull request.
+
+O workflow esta em:
+
+```text
+.github/workflows/tests.yml
+```
+
 ## Limitacoes
 
 - A primeira versao suporta apenas repositorios hospedados no GitHub.
