@@ -8,6 +8,7 @@ from githealth.exceptions import InvalidRepositoryError
 
 if TYPE_CHECKING:
     from githealth.models.file_change import FileChange
+    from githealth.models.review import Review
 
 REPO_PATTERN = re.compile(
     r"^(?:https://github\.com/)?(?P<owner>[A-Za-z0-9_.-]+)/(?P<repo>[A-Za-z0-9_.-]+?)(?:\.git)?/?$"
@@ -38,4 +39,18 @@ def parse_file_change(payload: dict[str, Any]) -> FileChange:
         additions=int(payload.get("additions", 0)),
         deletions=int(payload.get("deletions", 0)),
         changes=int(payload.get("changes", 0)),
+    )
+
+
+def parse_review(payload: dict[str, Any]) -> Review | None:
+    from githealth.models.review import Review
+
+    submitted_at = parse_datetime(payload.get("submitted_at"))
+    user = payload.get("user") or {}
+    if submitted_at is None:
+        return None
+    return Review(
+        reviewer=user.get("login", "unknown"),
+        state=payload.get("state", "UNKNOWN"),
+        submitted_at=submitted_at,
     )
