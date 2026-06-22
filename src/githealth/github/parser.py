@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import re
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
 
 from githealth.exceptions import InvalidRepositoryError
+
+if TYPE_CHECKING:
+    from githealth.models.file_change import FileChange
 
 REPO_PATTERN = re.compile(
     r"^(?:https://github\.com/)?(?P<owner>[A-Za-z0-9_.-]+)/(?P<repo>[A-Za-z0-9_.-]+?)(?:\.git)?/?$"
@@ -23,3 +27,15 @@ def parse_datetime(value: str | None) -> datetime | None:
     if value is None:
         return None
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
+
+
+def parse_file_change(payload: dict[str, Any]) -> FileChange:
+    from githealth.models.file_change import FileChange
+
+    return FileChange(
+        filename=payload["filename"],
+        status=payload.get("status", "modified"),
+        additions=int(payload.get("additions", 0)),
+        deletions=int(payload.get("deletions", 0)),
+        changes=int(payload.get("changes", 0)),
+    )
