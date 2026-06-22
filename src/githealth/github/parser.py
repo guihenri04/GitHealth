@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import UTC, datetime
 
 from githealth.exceptions import InvalidRepositoryError
 
@@ -16,3 +17,9 @@ def parse_repository(value: str) -> tuple[str, str]:
             "Use o formato 'owner/repository' ou 'https://github.com/owner/repository'."
         )
     return match.group("owner"), match.group("repo")
+
+
+def parse_datetime(value: str | None) -> datetime | None:
+    if value is None:
+        return None
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
