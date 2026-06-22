@@ -46,7 +46,9 @@ def _bar(hotspots: list[FileHotspot]) -> str:
     ][:10]
     if not rows:
         return ""
-    figure = px.bar(rows, x="Horas", y="Arquivo", orientation="h", title="Hotspots por tempo mediano")
+    figure = px.bar(
+        rows, x="Horas", y="Arquivo", orientation="h", title="Hotspots por tempo mediano"
+    )
     figure.update_layout(yaxis={"categoryorder": "total ascending"})
     return figure.to_html(full_html=False, include_plotlyjs=False)
 

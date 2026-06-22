@@ -24,7 +24,8 @@ def write_pull_requests_csv(path: Path, metrics: list[PullRequestMetrics]) -> No
 def write_file_hotspots_csv(path: Path, hotspots: list[FileHotspot]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=list(asdict(hotspots[0]).keys()) if hotspots else [])
+        fieldnames = list(asdict(hotspots[0]).keys()) if hotspots else []
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
         if not hotspots:
             file.write("")
             return

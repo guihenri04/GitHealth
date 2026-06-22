@@ -30,4 +30,6 @@ def write_analysis_json(
         "file_hotspots": [asdict(hotspot) for hotspot in hotspots],
         "correlations": [asdict(result) for result in correlations],
     }
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2, default=_default), encoding="utf-8")
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, default=_default), encoding="utf-8"
+    )
