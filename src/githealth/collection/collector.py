@@ -22,12 +22,27 @@ class PullRequestCollector:
             "direction": "desc",
             "per_page": 100,
         }
-        summaries = [
-            item
+        numbers = [
+            int(item["number"])
             for item in self.client.paginate(path, params=params, limit=config.limit)
             if self._inside_interval(item, config)
         ]
-        return [parse_pull_request(item, [], [], [], [], []) for item in summaries]
+
+        pull_requests: list[PullRequest] = []
+        for number in numbers:
+            pull_requests.append(self.collect_one(config.owner, config.repo, number))
+        return pull_requests
+
+    def collect_one(self, owner: str, repo: str, number: int) -> PullRequest:
+        detail = self.client.get_json(f"/repos/{owner}/{repo}/pulls/{number}")
+        files = list(self.client.paginate(f"/repos/{owner}/{repo}/pulls/{number}/files"))
+        reviews = list(self.client.paginate(f"/repos/{owner}/{repo}/pulls/{number}/reviews"))
+        review_comments = list(
+            self.client.paginate(f"/repos/{owner}/{repo}/pulls/{number}/comments")
+        )
+        events = list(self.client.paginate(f"/repos/{owner}/{repo}/issues/{number}/events"))
+        commits = list(self.client.paginate(f"/repos/{owner}/{repo}/pulls/{number}/commits"))
+        return parse_pull_request(detail, files, reviews, review_comments, events, commits)
 
     @staticmethod
     def _inside_interval(item: dict[str, object], config: AnalysisConfig) -> bool:
