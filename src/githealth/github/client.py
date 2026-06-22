@@ -5,7 +5,7 @@ from typing import Any
 import httpx
 
 from githealth.config import GitHubConfig
-from githealth.exceptions import GitHubAPIError
+from githealth.exceptions import GitHubAPIError, GitHubRateLimitError
 
 
 class GitHubClient:
@@ -40,6 +40,13 @@ class GitHubClient:
 
     def get_json(self, path_or_url: str, params: dict[str, Any] | None = None) -> Any:
         response = self._client.get(path_or_url, params=params)
+        if response.status_code in {403, 429} and (
+            response.headers.get("x-ratelimit-remaining") == "0" or response.status_code == 429
+        ):
+            reset = response.headers.get("x-ratelimit-reset")
+            raise GitHubRateLimitError(
+                f"GitHub API rate limit reached. Reset: {reset or 'unknown'}."
+            )
         if response.status_code == 401:
             raise GitHubAPIError("GitHub API authentication failed. Check GITHUB_TOKEN.")
         if response.status_code >= 400:
