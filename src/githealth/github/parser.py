@@ -54,3 +54,19 @@ def parse_review(payload: dict[str, Any]) -> Review | None:
         state=payload.get("state", "UNKNOWN"),
         submitted_at=submitted_at,
     )
+
+
+def ready_at_from_events(detail: dict[str, Any], events: list[dict[str, Any]]) -> datetime:
+    created_at = parse_datetime(detail["created_at"])
+    ready_events = [
+        parsed
+        for event in events
+        if event.get("event") == "ready_for_review"
+        for parsed in [parse_datetime(event.get("created_at"))]
+        if parsed is not None
+    ]
+    if ready_events:
+        return min(ready_events)
+    if created_at is None:
+        raise ValueError("Pull request payload does not contain a valid created_at value.")
+    return created_at
