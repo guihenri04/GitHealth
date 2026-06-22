@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Any
 
 import httpx
 
 from githealth.config import GitHubConfig
 from githealth.exceptions import GitHubAPIError, GitHubRateLimitError
+from githealth.github.pagination import get_next_url
 
 
 class GitHubClient:
@@ -54,3 +56,34 @@ class GitHubClient:
                 f"GitHub API returned {response.status_code}: {response.text[:200]}"
             )
         return response.json()
+
+    def paginate(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+        limit: int | None = None,
+    ) -> Iterator[dict[str, Any]]:
+        url: str | None = path
+        remaining = limit
+        while url:
+            response = self._client.get(url, params=params if url == path else None)
+            if response.status_code in {403, 429} and (
+                response.headers.get("x-ratelimit-remaining") == "0"
+                or response.status_code == 429
+            ):
+                raise GitHubRateLimitError("GitHub API rate limit reached during pagination.")
+            if response.status_code >= 400:
+                raise GitHubAPIError(
+                    f"GitHub API returned {response.status_code}: {response.text[:200]}"
+                )
+            payload = response.json()
+            if not isinstance(payload, list):
+                raise GitHubAPIError("GitHub pagination endpoint returned a non-list payload.")
+            for item in payload:
+                if remaining is not None and remaining <= 0:
+                    return
+                yield item
+                if remaining is not None:
+                    remaining -= 1
+            url = get_next_url(response.headers.get("link"))
+            params = None
