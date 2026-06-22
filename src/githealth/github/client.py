@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import Any
+
 import httpx
 
 from githealth.config import GitHubConfig
+from githealth.exceptions import GitHubAPIError
 
 
 class GitHubClient:
@@ -34,3 +37,13 @@ class GitHubClient:
 
     def __exit__(self, *_exc: object) -> None:
         self.close()
+
+    def get_json(self, path_or_url: str, params: dict[str, Any] | None = None) -> Any:
+        response = self._client.get(path_or_url, params=params)
+        if response.status_code == 401:
+            raise GitHubAPIError("GitHub API authentication failed. Check GITHUB_TOKEN.")
+        if response.status_code >= 400:
+            raise GitHubAPIError(
+                f"GitHub API returned {response.status_code}: {response.text[:200]}"
+            )
+        return response.json()
