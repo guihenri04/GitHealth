@@ -35,8 +35,10 @@ def render_summary(
     console.print(f"[bold]GitHealth — {repository}[/bold]\n")
     console.print(f"Pull requests analisados: {len(metrics)}")
     console.print(f"PRs merged: {len(merged)}")
-    console.print(f"Mediana ate primeira revisao: {_format_hours(_median([m.first_review_hours for m in metrics]))}")
-    console.print(f"Mediana ate encerramento/merge: {_format_hours(_median([m.cycle_hours for m in metrics]))}")
+    first_review = _format_hours(_median([m.first_review_hours for m in metrics]))
+    cycle = _format_hours(_median([m.cycle_hours for m in metrics]))
+    console.print(f"Mediana ate primeira revisao: {first_review}")
+    console.print(f"Mediana ate encerramento/merge: {cycle}")
     percentage = round((len(changed) / len(metrics)) * 100, 1) if metrics else 0
     console.print(f"PRs com pedido de alteracao: {percentage}%\n")
 
