@@ -2,148 +2,497 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GitHealth - {{ repository }}</title>
     <style>
       :root {
         color-scheme: light;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: #16202a;
-        background: #f5f7f9;
+        --bg: #f4f6f8;
+        --panel: #ffffff;
+        --panel-soft: #f8fafb;
+        --text: #17212b;
+        --muted: #63707d;
+        --line: #d9e0e6;
+        --brand: #146c64;
+        --brand-dark: #0d3f3a;
+        --accent: #c05621;
+        --ok: #236c45;
+        --shadow: 0 12px 28px rgba(23, 33, 43, 0.08);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
+        color: var(--text);
+        background: var(--bg);
       }
+
       header {
-        background: #1f4f46;
-        color: white;
-        padding: 32px max(24px, calc((100vw - 1120px) / 2));
+        background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+        color: #ffffff;
+        padding: 36px max(24px, calc((100vw - 1180px) / 2)) 30px;
       }
+
+      header .topline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #edf7f5;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      header p {
+        max-width: 780px;
+        margin: 14px 0 0;
+        color: #dbecea;
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
       main {
-        max-width: 1120px;
+        max-width: 1180px;
         margin: 0 auto;
         padding: 24px;
       }
+
       section {
-        margin: 28px 0;
+        margin: 26px 0;
       }
-      h1, h2 {
+
+      h2 {
         margin: 0 0 12px;
+        font-size: 22px;
+        letter-spacing: 0;
       }
-      .grid {
+
+      .section-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 12px;
+      }
+
+      .section-header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .summary-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 12px;
+        margin-top: -46px;
       }
+
       .metric {
-        background: white;
-        border: 1px solid #d7dde2;
-        border-radius: 8px;
+        min-height: 116px;
         padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
       }
+
+      .metric span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
       .metric strong {
         display: block;
+        margin-top: 10px;
         font-size: 28px;
+        line-height: 1.08;
       }
+
+      .metric small {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .chart-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+      }
+
+      .panel {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 8px 20px rgba(23, 33, 43, 0.05);
+      }
+
+      .panel-body {
+        padding: 14px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
       table {
         width: 100%;
+        min-width: 760px;
         border-collapse: collapse;
-        background: white;
-        border: 1px solid #d7dde2;
+        table-layout: auto;
       }
-      th, td {
-        padding: 10px 12px;
-        border-bottom: 1px solid #e7eaee;
+
+      th,
+      td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e8edf1;
         text-align: left;
+        vertical-align: top;
       }
+
       th {
-        background: #eef2f4;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: var(--panel-soft);
+        color: #394653;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
-      .chart {
-        background: white;
-        border: 1px solid #d7dde2;
+
+      tbody tr:hover {
+        background: #f9fbfb;
+      }
+
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .number {
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .pr-number {
+        width: 1%;
+        white-space: nowrap;
+      }
+
+      .compact {
+        width: 1%;
+        white-space: nowrap;
+      }
+
+      .title-cell {
+        min-width: 260px;
+        max-width: 520px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        word-break: normal;
+      }
+
+      .state {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #eaf5ef;
+        color: var(--ok);
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .state.closed {
+        background: #f6ebe5;
+        color: var(--accent);
+      }
+
+      .sample {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .sample.ok {
+        color: var(--ok);
+        font-weight: 700;
+      }
+
+      .empty {
+        padding: 22px;
+        color: var(--muted);
+        background: var(--panel);
+        border: 1px solid var(--line);
         border-radius: 8px;
-        padding: 10px;
       }
-      .muted {
-        color: #5c6873;
+
+      footer {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px 32px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .summary-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        header {
+          padding-top: 28px;
+        }
+
+        header .topline,
+        .section-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        main {
+          padding: 16px;
+        }
+
+        .summary-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          margin-top: -28px;
+        }
+
+        .metric {
+          min-height: 104px;
+        }
       }
     </style>
   </head>
   <body>
     <header>
+      <div class="topline">
+        <div class="badge">Relatorio historico</div>
+        <div class="badge">{{ repository }}</div>
+      </div>
       <h1>GitHealth</h1>
-      <p>Analise historica de gargalos de revisao em {{ repository }}</p>
+      <p>
+        Analise de pull requests, tempo de revisao, esforco observado e arquivos
+        associados a gargalos de manutencao.
+      </p>
     </header>
+
     <main>
-      <section class="grid">
-        <div class="metric"><span>Pull requests</span><strong>{{ metrics|length }}</strong></div>
-        <div class="metric"><span>Hotspots</span><strong>{{ hotspots|selectattr("sample_sufficient")|list|length }}</strong></div>
-        <div class="metric"><span>Associacoes</span><strong>{{ correlations|length }}</strong></div>
+      <section class="summary-grid" aria-label="Resumo">
+        <div class="metric">
+          <span>Pull requests</span>
+          <strong>{{ summary.pull_requests }}</strong>
+          <small>PRs analisados</small>
+        </div>
+        <div class="metric">
+          <span>Merged</span>
+          <strong>{{ summary.merged }}</strong>
+          <small>PRs integrados</small>
+        </div>
+        <div class="metric">
+          <span>Primeira revisao</span>
+          <strong>{{ summary.median_first_review }}</strong>
+          <small>Mediana</small>
+        </div>
+        <div class="metric">
+          <span>Ciclo</span>
+          <strong>{{ summary.median_cycle }}</strong>
+          <small>Mediana ate fechamento</small>
+        </div>
+        <div class="metric">
+          <span>Alteracoes</span>
+          <strong>{{ summary.change_request_rate }}</strong>
+          <small>Com pedido de ajuste</small>
+        </div>
+        <div class="metric">
+          <span>Hotspots</span>
+          <strong>{{ summary.hotspots }}</strong>
+          <small>Com amostra suficiente</small>
+        </div>
       </section>
 
       <section>
-        <h2>Graficos</h2>
-        {% if scatter_chart %}<div class="chart">{{ scatter_chart|safe }}</div>{% endif %}
-        {% if hotspot_chart %}<div class="chart">{{ hotspot_chart|safe }}</div>{% endif %}
+        <div class="section-header">
+          <div>
+            <h2>Graficos</h2>
+            <p>Os graficos ajudam a comparar tamanho, tempo e recorrencia por arquivo.</p>
+          </div>
+        </div>
+        <div class="chart-grid">
+          {% if scatter_chart %}
+            <div class="panel"><div class="panel-body">{{ scatter_chart|safe }}</div></div>
+          {% else %}
+            <div class="empty">Nao ha dados suficientes para o grafico de dispersao.</div>
+          {% endif %}
+          {% if hotspot_chart %}
+            <div class="panel"><div class="panel-body">{{ hotspot_chart|safe }}</div></div>
+          {% else %}
+            <div class="empty">Nao ha hotspots com amostra suficiente para o grafico.</div>
+          {% endif %}
+        </div>
       </section>
 
       <section>
-        <h2>Correlacoes</h2>
-        <p class="muted">As correlacoes indicam associacoes historicas, nao causalidade.</p>
-        <table>
-          <thead><tr><th>Caracteristica</th><th>Resultado</th><th>Spearman</th><th>Interpretacao</th></tr></thead>
-          <tbody>
-            {% for item in correlations %}
+        <div class="section-header">
+          <div>
+            <h2>Associacoes</h2>
+            <p>Correlacoes de Spearman indicam associacoes historicas, nao causalidade.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
               <tr>
-                <td>{{ item.feature }}</td>
-                <td>{{ item.outcome }}</td>
-                <td>{{ item.coefficient if item.coefficient is not none else "n/a" }}</td>
-                <td>{{ item.description }}</td>
+                <th>Caracteristica</th>
+                <th>Resultado</th>
+                <th class="number">Spearman</th>
+                <th>Interpretacao</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </section>
-
-      <section>
-        <h2>Hotspots de arquivos</h2>
-        <table>
-          <thead><tr><th>Arquivo</th><th>PRs</th><th>Mediana ciclo</th><th>Esforco</th><th>Amostra</th></tr></thead>
-          <tbody>
-            {% for item in hotspots[:20] %}
-              <tr>
-                <td>{{ item.filename }}</td>
-                <td>{{ item.pull_requests }}</td>
-                <td>{{ item.median_cycle_hours if item.median_cycle_hours is not none else "sem dados" }}</td>
-                <td>{{ item.median_review_effort }}</td>
-                <td>{{ "suficiente" if item.sample_sufficient else "insuficiente" }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </section>
-
-      <section>
-        <h2>Pull requests com maior tempo</h2>
-        <table>
-          <thead><tr><th>PR</th><th>Titulo</th><th>Estado</th><th>Arquivos</th><th>Churn</th><th>Ciclo h</th><th>Esforco</th></tr></thead>
-          <tbody>
-            {% for item in metrics|sort(attribute="cycle_hours", reverse=true) %}
-              {% if loop.index <= 20 %}
+            </thead>
+            <tbody>
+              {% for item in correlations %}
                 <tr>
-                  <td>#{{ item.number }}</td>
-                  <td>{{ item.title }}</td>
-                  <td>{{ item.state }}</td>
-                  <td>{{ item.changed_files }}</td>
-                  <td>{{ item.churn }}</td>
-                  <td>{{ item.cycle_hours if item.cycle_hours is not none else "sem dados" }}</td>
-                  <td>{{ item.review_effort_index }}</td>
+                  <td class="code">{{ item.feature }}</td>
+                  <td class="code">{{ item.outcome }}</td>
+                  <td class="number">{{ "%.2f"|format(item.coefficient) if item.coefficient is not none else "n/a" }}</td>
+                  <td>{{ item.description }}</td>
                 </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header">
+          <div>
+            <h2>Hotspots de arquivos</h2>
+            <p>Arquivos recorrentes em PRs com maior tempo de ciclo e maior esforco de revisao.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Arquivo</th>
+                <th class="number">PRs</th>
+                <th class="number">Mediana ciclo</th>
+                <th class="number">Esforco</th>
+                <th>Amostra</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in hotspots[:20] %}
+                <tr>
+                  <td class="code">{{ item.filename }}</td>
+                  <td class="number">{{ item.pull_requests }}</td>
+                  <td class="number">{{ item.median_cycle_hours|duration }}</td>
+                  <td class="number">{{ "%.1f"|format(item.median_review_effort) }}</td>
+                  <td>
+                    <span class="sample {{ 'ok' if item.sample_sufficient else '' }}">
+                      {{ "suficiente" if item.sample_sufficient else "insuficiente" }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header">
+          <div>
+            <h2>Pull requests com maior tempo</h2>
+            <p>Lista ordenada pelos PRs com maior tempo ate merge ou fechamento.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="pr-number">PR</th>
+                <th>Titulo</th>
+                <th class="compact">Estado</th>
+                <th class="number">Arquivos</th>
+                <th class="number">Churn</th>
+                <th class="number">Ciclo h</th>
+                <th class="number">Esforco</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in metrics|sort(attribute="cycle_hours", reverse=true) %}
+                {% if loop.index <= 20 %}
+                  <tr>
+                    <td class="code pr-number">#{{ item.number }}</td>
+                    <td class="title-cell" title="{{ item.title }}">{{ item.title }}</td>
+                    <td class="compact">
+                      <span class="state {{ 'closed' if item.state != 'merged' else '' }}">
+                        {{ item.state }}
+                      </span>
+                    </td>
+                    <td class="number">{{ item.changed_files }}</td>
+                    <td class="number">{{ item.churn }}</td>
+                    <td class="number">{{ item.cycle_hours|duration }}</td>
+                    <td class="number">{{ "%.1f"|format(item.review_effort_index) }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
+
+    <footer>
+      GitHealth apresenta evidencias historicas de revisao. Use os resultados como apoio
+      para investigacao, nao como prova isolada de causa.
+    </footer>
   </body>
 </html>
